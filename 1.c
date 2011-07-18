@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 int
 max(int a,int b)
@@ -21,7 +22,9 @@ main()
   FD_ZERO(&rfds);
   FD_SET(a,&rfds);
   FD_SET(b,&rfds);
-  
+
+  char s[200];
+
   for(;;){
     int r=select(max(a,b)+1,&rfds,NULL,NULL,NULL);
     
@@ -31,11 +34,17 @@ main()
       perror("select()");
       exit(EXIT_FAILURE);
     }
-
-    if(FD_ISSET(a,&rfds))
-      printf("a\n");
-    if(FD_ISSET(b,&rfds))
-      printf("b\n");
+    
+    if(FD_ISSET(a,&rfds)){
+      read(a,s,200);
+      printf("1 %s\n",s);
+      fflush(stdout);
+    }
+    if(FD_ISSET(b,&rfds)){
+      read(b,s,200);
+      printf("2 %s\n",s);
+      fflush(stdout);
+    }
   }
   exit(EXIT_SUCCESS);
 }
