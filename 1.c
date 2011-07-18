@@ -15,8 +15,11 @@ max(int a,int b)
 int
 main()
 {
-  int a=open("2-to-1",O_RDONLY);
-  int b=open("3-to-1",O_RDONLY);
+  FILE*af=fopen("2-to-1","r");
+  FILE*bf=fopen("3-to-1","r");
+  
+  int a=fileno(af);
+  int b=fileno(bf);
   
   fd_set rfds;
   FD_ZERO(&rfds);
@@ -36,12 +39,14 @@ main()
     }
     
     if(FD_ISSET(a,&rfds)){
-      read(a,s,200);
+      if(0==fgets(s,200,af))
+	continue;
       printf("1 %s\n",s);
       fflush(stdout);
     }
     if(FD_ISSET(b,&rfds)){
-      read(b,s,200);
+      if(0==fgets(s,200,bf))
+	continue;
       printf("2 %s\n",s);
       fflush(stdout);
     }
