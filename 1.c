@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-
+#include <sys/select.h>
 int
 max(int a,int b)
 {
@@ -21,34 +21,46 @@ main()
   int a=fileno(af);
   int b=fileno(bf);
   
-  fd_set rfds;
-  FD_ZERO(&rfds);
-  FD_SET(a,&rfds);
-  FD_SET(b,&rfds);
 
   char s[200];
-
-  for(;;){
+  int count;
+  for(count=0;count<10;count++){
+    fd_set rfds;
+    FD_ZERO(&rfds);
+    FD_SET(a,&rfds);
+    FD_SET(b,&rfds);
+    
     int r=select(max(a,b)+1,&rfds,NULL,NULL,NULL);
     
-    if(r==-1 && errno==EINTR)
+    printf("%d select returned\n",count);
+    fflush(stdout);
+    if(r==-1 && errno==EINTR){
+      printf("eintr\n");
       continue;
+    }
     if(r==-1){
       perror("select()");
       exit(EXIT_FAILURE);
     }
-    
-    if(FD_ISSET(a,&rfds)){
-      if(0==fgets(s,200,af))
-	continue;
-      printf("1 %s\n",s);
-      fflush(stdout);
-    }
-    if(FD_ISSET(b,&rfds)){
-      if(0==fgets(s,200,bf))
-	continue;
-      printf("2 %s\n",s);
-      fflush(stdout);
+    if(r){
+      if(FD_ISSET(a,&rfds)){
+	printf("fd a\n");
+	if(0==fgets(s,200,af)){
+	  printf("fgets a returned 0\n");
+	  continue;
+	}
+	printf("1 %s\n",s);
+	fflush(stdout);
+      }
+      if(FD_ISSET(b,&rfds)){
+	printf("fd b\n");
+	if(0==fgets(s,200,bf)){
+	  printf("fgets b returned 0\n");
+	  continue;
+	}
+	printf("2 %s\n",s);
+	fflush(stdout);
+      }
     }
   }
   exit(EXIT_SUCCESS);
