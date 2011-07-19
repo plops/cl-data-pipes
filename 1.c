@@ -25,12 +25,15 @@ main()
   char s[200];
   int count;
   for(count=0;count<10;count++){
-    fd_set rfds;
+    fd_set rfds,efds;
     FD_ZERO(&rfds);
     FD_SET(a,&rfds);
     FD_SET(b,&rfds);
+    FD_ZERO(&efds);
+    FD_SET(a,&efds);
+    FD_SET(b,&efds);
     
-    int r=select(max(a,b)+1,&rfds,NULL,NULL,NULL);
+    int r=select(max(a,b)+1,&rfds,NULL,&efds,NULL);
     
     printf("%d select returned\n",count);
     fflush(stdout);
@@ -52,6 +55,11 @@ main()
 	printf("1 %s\n",s);
 	fflush(stdout);
       }
+      if(FD_ISSET(a,&efds))
+	break;
+      if(FD_ISSET(b,&efds))
+	break;
+      
       if(FD_ISSET(b,&rfds)){
 	printf("fd b\n");
 	if(0==fgets(s,200,bf)){
