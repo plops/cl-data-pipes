@@ -4,6 +4,12 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/select.h>
+
+/*
+cat - > 3-to-1
+cat - > 2-to-1
+*/
+
 int
 max(int a,int b)
 {
@@ -42,11 +48,11 @@ main()
     }
     if(r){
       if(FD_ISSET(a,&rfds)){
-	printf("fd a\n");
+	//printf("fd a\n");
 	read(a, s, 200);
       }
       if(FD_ISSET(b,&rfds)){
-	printf("fd b\n");
+	//printf("fd b\n");
 	read(b, s, 200);
       }
     }
