@@ -48,13 +48,13 @@ main()
     }
     if(r){
       if(FD_ISSET(a,&rfds)){
-	read(a, s, 200);
-	s[199]=0;
+	int n=read(a, s, 200);
+	s[n-1]=0;
 	printf("fd a %s\n", s);
       }
       if(FD_ISSET(b,&rfds)){
-	read(b, s, 200);
-	s[199]=0;
+	int n=read(b, s, 200);
+	s[n-1]=0;
 	printf("fd b %s\n", s);
       }
     }
